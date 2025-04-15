@@ -86,7 +86,9 @@ std::vector<std::string> compile(const std::vector<std::string>& lines) {
     bool in_onstart_block = false;
     std::vector<std::string> onstart_code;
 
-    for (const auto& line : lines) {
+    for (size_t i = 1; i < lines.size(); ++i) {
+        const auto& line = lines[i];
+
         std::string trimmed_line = line;
         size_t first_non_space = trimmed_line.find_first_not_of(" \t");
         if (first_non_space != std::string::npos) {
@@ -100,7 +102,7 @@ std::vector<std::string> compile(const std::vector<std::string>& lines) {
         } else if (in_onstart_block) {
             onstart_code.push_back(trimmed_line);
         } else if (trimmed_line.substr(0, 5) == "use::") {
-            std::string library_name = trimmed_line.substr(4);
+            std::string library_name = trimmed_line.substr(5);
             final_lines.push_back("#include \"" + library_name + "\"");
         } else if (trimmed_line.substr(0, 8) == "__Use__.") {
             std::string function_call = trimmed_line.substr(8);        // Remove "__Use__ "
@@ -173,7 +175,7 @@ int main(int argc, char* argv[]) {
         fileWas = true;
     };
 
-    std::string compilation = compileCommand(filePath, extension);
+    std::string compilation = compileCommand(cppFile, extension);
     system(compilation.c_str());
 
     if (!fileWas) {
